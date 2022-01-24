@@ -7,6 +7,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { useGetCryptosQuery } from '../services/cryptoApi';
 import { useGetCryptoNewsQuery } from '../services/cryptoNewsApi';
+import Loader from './Loader';
 
 const News = ({ simplified }) =>
 {
@@ -15,9 +16,7 @@ const News = ({ simplified }) =>
     const { data: cryptoNews } = useGetCryptoNewsQuery({ newsCategory, count: simplified ? 6 : 12 });
     const { data } = useGetCryptosQuery(100);
 
-
-    if (!cryptoNews?.value) return 'Loading...';
-    console.log(cryptoNews.value[0].name);
+    if (!cryptoNews?.value) return <Loader />
 
     return <div>
         <Row gutter={[24, 24]}>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import { Col, Row, Typography } from 'antd';
-
+import { CategoryScale, Chart } from 'chart.js';
 const { Title } = Typography;
-
+Chart.register(CategoryScale);
 const LineChart = ({ coinHistory, currentPrice, coinName }) =>
 {
     const coinPrice = [];
@@ -32,15 +32,7 @@ const LineChart = ({ coinHistory, currentPrice, coinName }) =>
     };
 
     const options = {
-        scales: {
-            yAxes: [
-                {
-                    ticks: {
-                        beginAtZero: true,
-                    },
-                },
-            ],
-        },
+
     };
 
     return (

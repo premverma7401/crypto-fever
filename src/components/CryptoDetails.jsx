@@ -1,23 +1,29 @@
-import { CheckOutlined, DollarCircleOutlined, ExclamationCircleOutlined, FundOutlined, MoneyCollectOutlined, NumberOutlined, StopOutlined, ThunderboltOutlined, TrophyOutlined } from '@ant-design/icons/lib/icons';
+import React, { useState } from 'react';
+import
+{
+    CheckOutlined, DollarCircleOutlined, ExclamationCircleOutlined, FundOutlined,
+    MoneyCollectOutlined, NumberOutlined, StopOutlined,
+    ThunderboltOutlined, TrophyOutlined
+} from '@ant-design/icons/lib/icons';
 import { Col, Row, Select } from 'antd';
-import { Option } from 'antd/lib/mentions';
 import Text from 'antd/lib/typography/Text';
 import Title from 'antd/lib/typography/Title';
 import HTMLReactParser from 'html-react-parser';
 import millify from 'millify';
-import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGetCryptoDetailsQuery } from '../services/cryptoApi';
-import LineChart from './Linehart';
+import { useGetCryptoDetailsQuery, useGetCryptoHistoryQuery } from '../services/cryptoApi';
+import LineChart from './LineChart';
+import { Option } from 'antd/lib/mentions';
+import Loader from './Loader';
 
 const CryptoDetails = () =>
 {
     const { coinId } = useParams();
     const [timeperiod, setTimeperiod] = useState('7d');
     const { data, isFetching } = useGetCryptoDetailsQuery(coinId);
+    const { data: coinHistory } = useGetCryptoHistoryQuery({ coinId, timeperiod });
     const cryptoDetails = data?.data?.coin;
     const time = ['3h', '24h', '7d', '30d', '1y', '3m', '3y', '5y'];
-
     const stats = [
         { title: 'Price to USD', value: `$ ${cryptoDetails?.price && millify(cryptoDetails?.price)}`, icon: <DollarCircleOutlined /> },
         { title: 'Rank', value: cryptoDetails?.rank, icon: <NumberOutlined /> },
@@ -33,6 +39,7 @@ const CryptoDetails = () =>
         { title: 'Total Supply', value: `$ ${cryptoDetails?.supply?.total && millify(cryptoDetails?.supply?.total)}`, icon: <ExclamationCircleOutlined /> },
         { title: 'Circulating Supply', value: `$ ${cryptoDetails?.supply?.circulating && millify(cryptoDetails?.supply?.circulating)}`, icon: <ExclamationCircleOutlined /> },
     ];
+    if (isFetching) return <Loader />
 
     return (
         <Col className="coin-detail-container">
@@ -52,8 +59,8 @@ const CryptoDetails = () =>
                         <Title level={3} className="coin-details-heading">{cryptoDetails.name} Value Statistics</Title>
                         <p>An overview showing the statistics of {cryptoDetails.name}, such as the base and quote currency, the rank, and trading volume.</p>
                     </Col>
-                    {stats.map(({ icon, title, value }) => (
-                        <Col className="coin-stats">
+                    {stats.map(({ icon, title, value, i }) => (
+                        <Col className="coin-stats" key={i}>
                             <Col className="coin-stats-name">
                                 <Text>{icon}</Text>
                                 <Text>{title}</Text>
@@ -67,8 +74,8 @@ const CryptoDetails = () =>
                         <Title level={3} className="coin-details-heading">Other Stats Info</Title>
                         <p>An overview showing the statistics of {cryptoDetails.name}, such as the base and quote currency, the rank, and trading volume.</p>
                     </Col>
-                    {genericStats.map(({ icon, title, value }) => (
-                        <Col className="coin-stats">
+                    {genericStats.map(({ icon, title, value, i }) => (
+                        <Col className="coin-stats" key={i}>
                             <Col className="coin-stats-name">
                                 <Text>{icon}</Text>
                                 <Text>{title}</Text>
@@ -85,8 +92,8 @@ const CryptoDetails = () =>
                 </Row>
                 <Col className="coin-links">
                     <Title level={3} className="coin-details-heading">{cryptoDetails.name} Links</Title>
-                    {cryptoDetails.links?.map((link) => (
-                        <Row className="coin-link" key={link.name}>
+                    {cryptoDetails.links?.map((link, i) => (
+                        <Row className="coin-link" key={i}>
                             <Title level={5} className="link-name">{link.type}</Title>
                             <a href={link.url} target="_blank" rel="noreferrer">{link.name}</a>
                         </Row>
